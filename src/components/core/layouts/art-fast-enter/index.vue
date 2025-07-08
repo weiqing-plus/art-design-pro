@@ -65,7 +65,6 @@
 
 <script setup lang="ts">
   import { RoutesAlias } from '@/router/routesAlias'
-  import { WEB_LINKS } from '@/utils/constants'
 
   defineOptions({ name: 'ArtFastEnter' })
 
@@ -106,48 +105,6 @@
       icon: '&#xe812;',
       iconColor: '#ff3b30',
       path: RoutesAlias.Analysis
-    },
-    {
-      name: '礼花效果',
-      description: '动画特效展示',
-      icon: '&#xe7ed;',
-      iconColor: '#7A7FFF',
-      path: RoutesAlias.Fireworks
-    },
-    {
-      name: '聊天',
-      description: '即时通讯功能',
-      icon: '&#xe70a;',
-      iconColor: '#13DEB9',
-      path: RoutesAlias.Chat
-    },
-    {
-      name: '官方文档',
-      description: '使用指南与开发文档',
-      icon: '&#xe788;',
-      iconColor: '#ffb100',
-      path: WEB_LINKS.DOCS
-    },
-    {
-      name: '技术支持',
-      description: '技术支持与问题反馈',
-      icon: '&#xe86e;',
-      iconColor: '#ff6b6b',
-      path: WEB_LINKS.COMMUNITY
-    },
-    {
-      name: '更新日志',
-      description: '版本更新与变更记录',
-      icon: '&#xe81c;',
-      iconColor: '#38C0FC',
-      path: RoutesAlias.ChangeLog
-    },
-    {
-      name: '哔哩哔哩',
-      description: '技术分享与交流',
-      icon: '&#xe6b4;',
-      iconColor: '#FB7299',
-      path: WEB_LINKS.BILIBILI
     }
   ]
 
@@ -155,9 +112,7 @@
     { name: '登录', path: RoutesAlias.Login },
     { name: '注册', path: RoutesAlias.Register },
     { name: '忘记密码', path: RoutesAlias.ForgetPassword },
-    { name: '定价', path: RoutesAlias.Pricing },
-    { name: '个人中心', path: RoutesAlias.UserCenter },
-    { name: '留言管理', path: RoutesAlias.Comment }
+    { name: '个人中心', path: RoutesAlias.UserCenter }
   ]
 
   const isExternalLink = (path: string): boolean => path.startsWith('http')
