@@ -147,13 +147,14 @@ export function useTable<T = unknown, P extends BaseRequestParams = BaseRequestP
 
   // 搜索参数
   const searchParams = reactive(
-    Object.assign(
-      {
-        current: 1,
-        size: 10
-      },
-      apiParams || {}
-    ) as P
+    // Object.assign(
+    //   {
+    //     current: 1,
+    //     size: 10
+    //   },
+    //   apiParams || {}
+    // ) as P
+    Object.assign({}, apiParams || {}) as P
   )
 
   // 分页配置
@@ -241,10 +242,10 @@ export function useTable<T = unknown, P extends BaseRequestParams = BaseRequestP
       const requestParams = Object.assign(
         {},
         searchParams,
-        {
-          current: pagination.current,
-          size: pagination.size
-        },
+        // {
+        //   current: pagination.current,
+        //   size: pagination.size
+        // },
         params || {}
       ) as P
 

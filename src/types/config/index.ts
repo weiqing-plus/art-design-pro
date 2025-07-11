@@ -46,6 +46,26 @@ export interface SystemBasicConfig {
   copyright?: string
 }
 
+export interface ApplicationItem {
+  /** 应用名称 */
+  name: string
+  /** 应用描述 */
+  description: string
+  /** 图标代码 */
+  icon: string
+  /** 图标颜色 */
+  iconColor: string
+  /** 跳转路径 */
+  path: string
+}
+
+export interface QuickLinkItem {
+  /** 链接名称 */
+  name: string
+  /** 跳转路径 */
+  path: string
+}
+
 // 系统配置
 export interface SystemConfig {
   // Element Plus 主题配置
@@ -71,6 +91,11 @@ export interface SystemConfig {
     defaultMenuWidth: number
     defaultCustomRadius: string
     defaultTabStyle: string
+  }
+  fastEnterSetting?: {
+    show: boolean
+    applicationList: ApplicationItem[]
+    quickLinkList: QuickLinkItem[]
   }
 }
 

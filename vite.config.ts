@@ -29,9 +29,9 @@ export default ({ mode }: { mode: string }) => {
       port: parseInt(VITE_PORT),
       proxy: {
         '/api': {
-          target: VITE_API_URL,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
+          target: 'http://localhost:9501',
+          changeOrigin: false,
+          rewrite: (path) => path.replace(/^\/api/, '/admin/')
         }
       },
       host: true

@@ -53,7 +53,6 @@
 
   type UserListItem = Api.User.UserListItem
   const { width } = useWindowSize()
-  const { getUserList } = UserService
 
   // 弹窗相关
   const dialogType = ref<Form.DialogType>('add')
@@ -101,9 +100,9 @@
   } = useTable<UserListItem>({
     // 核心配置
     core: {
-      apiFn: getUserList,
+      apiFn: UserService.getUserList,
       apiParams: {
-        current: 1,
+        pagexxxxx: 1,
         size: 20,
         name: '',
         phone: '',
@@ -121,8 +120,8 @@
             return h('div', { class: 'user', style: 'display: flex; align-items: center' }, [
               h('img', { class: 'avatar', src: row.avatar }),
               h('div', {}, [
-                h('p', { class: 'user-name' }, row.userName),
-                h('p', { class: 'email' }, row.userEmail)
+                h('p', { class: 'user-name' }, row.username),
+                h('p', { class: 'email' }, row.nickname)
               ])
             ])
           }

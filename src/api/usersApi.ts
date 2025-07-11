@@ -12,8 +12,8 @@ export class UserService {
 
   // 获取用户信息
   static getUserInfo() {
-    return request.get<Api.User.UserInfo>({
-      url: '/api/user/info'
+    return request.post<Api.User.UserInfo>({
+      url: '/api/auth/info'
     })
   }
 

@@ -745,29 +745,29 @@
 
   const handleRowClick = (row: UserListItem) => {
     console.log('行点击:', row)
-    logEvent('行点击', `点击了用户: ${row.userName}`)
+    logEvent('行点击', `点击了用户: ${row.username}`)
   }
 
   const handleRowDblclick = (row: UserListItem) => {
     console.log('行双击:', row)
-    logEvent('行双击', `双击了用户: ${row.userName}`)
-    ElMessage.info(`双击查看 ${row.userName} 的详细信息`)
+    logEvent('行双击', `双击了用户: ${row.username}`)
+    ElMessage.info(`双击查看 ${row.username} 的详细信息`)
   }
 
   const handleRowContextmenu = (row: UserListItem) => {
     console.log('行右键菜单:', row)
-    logEvent('行右键', `右键点击用户: ${row.userName}`)
-    ElMessage.info(`右键菜单 - ${row.userName}`)
+    logEvent('行右键', `右键点击用户: ${row.username}`)
+    ElMessage.info(`右键菜单 - ${row.username}`)
   }
 
   const handleCellClick = (row: UserListItem, column: any) => {
     console.log('单元格点击:', row, column)
-    logEvent('单元格点击', `点击了 ${row.userName} 的 ${column.label} 列`)
+    logEvent('单元格点击', `点击了 ${row.username} 的 ${column.label} 列`)
   }
 
   const handleCellDblclick = (row: UserListItem, column: any) => {
     console.log('单元格双击:', row, column)
-    logEvent('单元格双击', `双击了 ${row.userName} 的 ${column.label} 列`)
+    logEvent('单元格双击', `双击了 ${row.username} 的 ${column.label} 列`)
   }
 
   const handleHeaderClick = (column: any) => {
@@ -925,7 +925,7 @@
   }
 
   const handleEdit = (row: UserListItem) => {
-    ElMessage.success(`编辑用户 ${row.userName} 成功`)
+    ElMessage.success(`编辑用户 ${row.username} 成功`)
     setTimeout(() => {
       refreshAfterUpdate()
     }, 1000)
@@ -933,7 +933,7 @@
 
   const handleDelete = async (row: UserListItem) => {
     try {
-      await ElMessageBox.confirm(`确定要删除用户 ${row.userName} 吗？`, '警告', {
+      await ElMessageBox.confirm(`确定要删除用户 ${row.username} 吗？`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -949,7 +949,7 @@
   }
 
   const handleView = (row: UserListItem) => {
-    ElMessage.info(`查看用户 ${row.userName}`)
+    ElMessage.info(`查看用户 ${row.username}`)
   }
 
   const handleBatchDelete = async () => {

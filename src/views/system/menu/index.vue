@@ -20,10 +20,6 @@
           <ElButton @click="toggleExpand" v-ripple>
             {{ isExpanded ? '收起' : '展开' }}
           </ElButton>
-          <!-- 按钮权限：前端控制模式，使用 hasAuth 方法 -->
-          <ElButton v-if="hasAuth('add')" @click="showModel('menu', null, true)" v-ripple>
-            添加菜单
-          </ElButton>
         </template>
       </ArtTableHeader>
       <!-- 表格 -->
