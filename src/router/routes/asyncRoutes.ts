@@ -22,7 +22,7 @@ export const asyncRoutes: AppRouteRecord[] = [
     meta: {
       title: 'menus.dashboard.title',
       icon: '&#xe721;',
-      roles: ['R_SUPER', 'R_ADMIN'] // 角色权限，前端控制模式（只有拥有这些角色的用户才能访问）
+      roles: ['R_SUPER', 'R_ADMIN']
     },
     children: [
       {
@@ -33,64 +33,6 @@ export const asyncRoutes: AppRouteRecord[] = [
           title: 'menus.dashboard.console',
           keepAlive: false,
           fixedTab: true
-        }
-      },
-      {
-        path: 'analysis',
-        name: 'Analysis',
-        component: RoutesAlias.Analysis,
-        meta: {
-          title: 'menus.dashboard.analysis',
-          keepAlive: false
-        }
-      },
-      {
-        path: 'ecommerce',
-        name: 'Ecommerce',
-        component: RoutesAlias.Ecommerce,
-        meta: {
-          title: 'menus.dashboard.ecommerce',
-          keepAlive: false
-        }
-      }
-    ]
-  },
-  {
-    path: '/examples',
-    name: 'Examples',
-    component: RoutesAlias.Layout,
-    meta: {
-      title: 'menus.examples.title',
-      icon: '&#xe8d4;',
-      showBadge: true
-    },
-    children: [
-      {
-        path: 'tabs',
-        name: 'Tabs',
-        component: RoutesAlias.ExamplesTabs,
-        meta: {
-          title: 'menus.examples.tabs'
-        }
-      },
-      {
-        path: 'tables/basic',
-        name: 'TablesBasic',
-        component: RoutesAlias.ExamplesTablesBasic,
-        meta: {
-          title: 'menus.examples.tablesBasic',
-          keepAlive: true,
-          showTextBadge: 'New'
-        }
-      },
-      {
-        path: 'tables',
-        name: 'Tables',
-        component: RoutesAlias.ExamplesTables,
-        meta: {
-          title: 'menus.examples.tables',
-          keepAlive: true,
-          showTextBadge: 'New'
         }
       }
     ]
@@ -162,16 +104,71 @@ export const asyncRoutes: AppRouteRecord[] = [
       }
     ]
   },
-  // 一级菜单
   {
-    name: 'ChangeLog',
-    path: '/change/log',
-    component: RoutesAlias.ChangeLog,
+    path: '/result',
+    name: 'Result',
+    component: RoutesAlias.Layout,
     meta: {
-      title: 'menus.plan.log',
-      showTextBadge: `v${__APP_VERSION__}`,
-      icon: '&#xe712;',
-      keepAlive: false
-    }
+      title: 'menus.result.title',
+      icon: '&#xe715;'
+    },
+    children: [
+      {
+        path: 'success',
+        name: 'ResultSuccess',
+        component: RoutesAlias.Success,
+        meta: {
+          title: 'menus.result.success',
+          keepAlive: true
+        }
+      },
+      {
+        path: 'fail',
+        name: 'ResultFail',
+        component: RoutesAlias.Fail,
+        meta: {
+          title: 'menus.result.fail',
+          keepAlive: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/exception',
+    name: 'Exception',
+    component: RoutesAlias.Layout,
+    meta: {
+      title: 'menus.exception.title',
+      icon: '&#xe820;'
+    },
+    children: [
+      {
+        path: '403',
+        name: '403',
+        component: RoutesAlias.Exception403,
+        meta: {
+          title: 'menus.exception.forbidden',
+          keepAlive: true
+        }
+      },
+      {
+        path: '404',
+        name: '404',
+        component: RoutesAlias.Exception404,
+        meta: {
+          title: 'menus.exception.notFound',
+          keepAlive: true
+        }
+      },
+      {
+        path: '500',
+        name: '500',
+        component: RoutesAlias.Exception500,
+        meta: {
+          title: 'menus.exception.serverError',
+          keepAlive: true
+        }
+      }
+    ]
   }
 ]
