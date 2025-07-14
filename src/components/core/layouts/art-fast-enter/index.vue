@@ -27,7 +27,7 @@
         <div class="apps-grid">
           <!-- 应用列表 -->
           <div
-            v-for="application in applicationList"
+            v-for="application in enabledApplications"
             :key="application.name"
             class="app-item"
             @click="handleNavigate(application.path)"
@@ -51,7 +51,7 @@
         <h3>快速链接</h3>
         <ul>
           <li
-            v-for="quickLink in quickLinkList"
+            v-for="quickLink in enabledQuickLinks"
             :key="quickLink.name"
             @click="handleNavigate(quickLink.path)"
           >
@@ -64,56 +64,15 @@
 </template>
 
 <script setup lang="ts">
-  import { RoutesAlias } from '@/router/routesAlias'
+  import { useFastEnter } from '@/composables/useFastEnter'
 
   defineOptions({ name: 'ArtFastEnter' })
-
-  interface ApplicationItem {
-    /** 应用名称 */
-    name: string
-    /** 应用描述 */
-    description: string
-    /** 图标代码 */
-    icon: string
-    /** 图标颜色 */
-    iconColor: string
-    /** 跳转路径 */
-    path: string
-  }
-
-  interface QuickLinkItem {
-    /** 链接名称 */
-    name: string
-    /** 跳转路径 */
-    path: string
-  }
 
   const router = useRouter()
   const popoverRef = ref()
 
-  const applicationList: ApplicationItem[] = [
-    {
-      name: '工作台',
-      description: '系统概览与数据统计',
-      icon: '&#xe721;',
-      iconColor: '#377dff',
-      path: RoutesAlias.Dashboard
-    },
-    {
-      name: '分析页',
-      description: '数据分析与可视化',
-      icon: '&#xe812;',
-      iconColor: '#ff3b30',
-      path: RoutesAlias.Analysis
-    }
-  ]
-
-  const quickLinkList: QuickLinkItem[] = [
-    { name: '登录', path: RoutesAlias.Login },
-    { name: '注册', path: RoutesAlias.Register },
-    { name: '忘记密码', path: RoutesAlias.ForgetPassword },
-    { name: '个人中心', path: RoutesAlias.UserCenter }
-  ]
+  // 使用快速入口配置
+  const { enabledApplications, enabledQuickLinks } = useFastEnter()
 
   const isExternalLink = (path: string): boolean => path.startsWith('http')
 
