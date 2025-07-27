@@ -50,6 +50,14 @@
           </ElFormItem>
 
           <template v-if="labelPosition === 'menu'">
+            <ElFormItem label="上级菜单" prop="parentId">
+              <ElTreeSelect
+                :check-strictly="true"
+                :data="menuTreeData"
+                v-model="form.parentId"
+                :default-expand-all="true"
+              />
+            </ElFormItem>
             <ElRow :gutter="20">
               <ElCol :span="12">
                 <ElFormItem label="菜单名称" prop="name">
@@ -173,6 +181,7 @@
   import { AppRouteRecord } from '@/types/router'
   import { useAuth } from '@/composables/useAuth'
   import { SearchFormItem } from '@/types'
+  import { menuService } from '@/api/menuApi'
 
   defineOptions({ name: 'Menus' })
 
@@ -204,7 +213,8 @@
   // 搜索处理
   const handleSearch = () => {
     // 将当前输入的筛选条件应用到实际搜索
-    Object.assign(appliedFilters, { ...formFilters })
+    const filter = Object.assign(appliedFilters, { ...formFilters })
+    console.log('filter', filter)
     getTableData()
   }
 
@@ -344,23 +354,6 @@
       width: 180,
       formatter: (row: AppRouteRecord) => {
         return h('div', [
-          // 这里写两组权限标识判断是为了方便演示，在实际开发中可以删除其中一组
-          // 前端模式权限标识
-          hasAuth('B_CODE1') &&
-            h(ArtButtonTable, {
-              type: 'add',
-              onClick: () => showModel('menu')
-            }),
-          hasAuth('B_CODE2') &&
-            h(ArtButtonTable, {
-              type: 'edit',
-              onClick: () => showDialog('edit', row)
-            }),
-          hasAuth('B_CODE3') &&
-            h(ArtButtonTable, {
-              type: 'delete',
-              onClick: () => deleteMenu()
-            }),
           // 后端模式权限标识
           hasAuth('add') &&
             h(ArtButtonTable, {
@@ -388,6 +381,7 @@
 
   const dialogVisible = ref(false)
   const form = reactive({
+    parentId: 0,
     // 菜单
     name: '',
     path: '',
@@ -425,14 +419,14 @@
 
   onMounted(() => {
     getTableData()
+    setMenuTreeData()
   })
 
-  const getTableData = () => {
+  const getTableData = async () => {
     loading.value = true
-    setTimeout(() => {
-      tableData.value = menuList.value
-      loading.value = false
-    }, 500)
+    const { menuList } = await menuService.getTreeList()
+    tableData.value = menuList
+    loading.value = false
   }
 
   // 过滤后的表格数据
@@ -507,6 +501,7 @@
   const handleChange = () => {}
 
   const submitForm = async () => {
+    console.log('form', form)
     if (!formRef.value) return
 
     await formRef.value.validate(async (valid) => {
@@ -533,6 +528,7 @@
       nextTick(() => {
         // 回显数据
         if (type === 'menu') {
+          form.parentId = row.parent_id
           // 菜单数据回显
           form.name = formatMenuTitle(row.meta.title)
           form.path = row.path
@@ -633,6 +629,40 @@
       if (tableRef.value) {
         tableRef.value[isExpanded.value ? 'expandAll' : 'collapseAll']()
       }
+    })
+  }
+
+  const menuTreeData = ref<TreeSelectOption[]>([])
+
+  const setMenuTreeData = () => {
+    const node: TreeSelectOption[] = [
+      {
+        label: '顶级菜单',
+        value: 0,
+        children: convertToTreeSelectOptions(menuList.value)
+      }
+    ]
+    menuTreeData.value = node
+    console.log(menuTreeData.value)
+  }
+
+  interface TreeSelectOption {
+    label: string
+    value: number
+    children?: TreeSelectOption[]
+  }
+
+  // 转换为树结构
+  const convertToTreeSelectOptions = (data: AppRouteRecord[]): TreeSelectOption[] => {
+    return data.map((item): TreeSelectOption => {
+      const node: TreeSelectOption = {
+        label: item.meta?.title,
+        value: item.id as number
+      }
+      if (item.children && item.children.length > 0) {
+        node.children = convertToTreeSelectOptions(item.children)
+      }
+      return node
     })
   }
 </script>

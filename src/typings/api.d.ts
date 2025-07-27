@@ -87,4 +87,20 @@ declare namespace Api {
       userRoles: string[]
     }
   }
+
+  namespace Role {
+    interface RoleListItem {
+      id?: number
+      name: string
+      status: 1 | 2
+      desc?: string
+      created_at?: string
+      updated_at?: string
+    }
+
+    interface RoleListData {
+      total: number
+      list: RoleListItem[]
+    }
+  }
 }
