@@ -17,8 +17,9 @@
       </template>
       <div class="intro-content">
         <p class="intro-text">
-          useTable 提供强大的组合式 API，集成数据获取、智能缓存（LRU算法）、防抖搜索、
-          多种刷新策略、错误处理、列配置管理、移动端适配等核心功能，全面提升表格开发效率
+          集成搜索、刷新、全屏、大小控制、列显示隐藏、拖拽排序、表格样式控制、并内置 useTable
+          组合式函数，提供强大的组合式 API，集成数据获取、智能缓存（LRU算法）、
+          多种刷新策略等核心功能，全面提升表格开发效率。
         </p>
 
         <!-- 调试面板 -->
@@ -154,78 +155,46 @@
         fullClass="art-table-card"
       >
         <template #left>
-          <div class="toolbar-left">
-            <ElButton type="primary" @click="handleAdd" v-ripple>
-              <ElIcon><Plus /></ElIcon>
-              新增用户
-            </ElButton>
+          <ElButton type="primary" @click="handleAdd" v-ripple>
+            <ElIcon><Plus /></ElIcon>
+            新增用户
+          </ElButton>
 
-            <!-- 导出导入功能 -->
-            <ArtExcelExport
-              :data="tableData as any"
-              :columns="exportColumns as any"
-              filename="用户数据"
-              :auto-index="true"
-              button-text="导出"
-              @export-success="handleExportSuccess"
-            />
-            <ArtExcelImport
-              @import-success="handleImportSuccess"
-              @import-error="handleImportError"
-            />
+          <!-- 导出导入功能 -->
+          <ArtExcelExport
+            :data="tableData as any"
+            :columns="exportColumns as any"
+            filename="用户数据"
+            :auto-index="true"
+            button-text="导出"
+            @export-success="handleExportSuccess"
+          />
+          <ArtExcelImport
+            @import-success="handleImportSuccess"
+            @import-error="handleImportError"
+            style="margin: 0 12px"
+          />
 
-            <ElButton @click="handleClearData" plain v-ripple> 清空数据 </ElButton>
+          <ElButton @click="handleClearData" plain v-ripple> 清空数据 </ElButton>
 
-            <ElButton @click="handleBatchDelete" :disabled="selectedRows.length === 0" v-ripple>
-              <ElIcon><Delete /></ElIcon>
-              批量删除 ({{ selectedRows.length }})
-            </ElButton>
-          </div>
+          <ElButton @click="handleBatchDelete" :disabled="selectedRows.length === 0" v-ripple>
+            <ElIcon><Delete /></ElIcon>
+            批量删除 ({{ selectedRows.length }})
+          </ElButton>
         </template>
       </ArtTableHeader>
 
-      <!-- 表格组件 -->
-      <!-- 
-        :pagination="{
-          current: paginationState.current,
-          size: paginationState.size,
-          total: paginationState.total,
-          sizes: [10, 20, 50, 100],
-          align: 'center',
-          layout: 'total, sizes, prev, pager, next, jumper',
-          hideOnSinglePage: false
-        }"
-        :table-config="{
-          rowKey: 'id',
-          border: true,
-          stripe: true,
-          showHeaderBackground: true,
-          highlightCurrentRow: true
-          emptyHeight: '360px'
-        }"
-       -->
       <ArtTable
         ref="tableRef"
         :loading="isLoading"
         :pagination="paginationState"
         :data="tableData"
         :columns="columns"
-        :table-config="{
-          height: computedTableHeight,
-          emptyHeight: '360px',
-          showSummary: tableConfig.showSummary,
-          summaryMethod: handleSummaryMethod,
-          sumText: '合计'
-        }"
-        :layout="{ marginTop: 16, showIndex: false }"
-        @row:selection-change="handleSelectionChange"
-        @row:click="handleRowClick"
-        @row:dblclick="handleRowDblclick"
-        @row:contextmenu="handleRowContextmenu"
-        @cell:click="handleCellClick"
-        @cell:dblclick="handleCellDblclick"
-        @header:click="handleHeaderClick"
-        @sort:change="handleSortChange"
+        :height="computedTableHeight"
+        @selection-change="handleSelectionChange"
+        @row-click="handleRowClick"
+        @header-click="handleHeaderClick"
+        @sort-change="handleSortChange"
         @pagination:size-change="onPageSizeChange"
         @pagination:current-change="onCurrentPageChange"
       >
@@ -331,11 +300,6 @@
           <h5>⚙️ 表格配置演示</h5>
           <div class="demo-buttons">
             <ElSwitch
-              v-model="tableConfig.showSummary"
-              active-text="显示合计行"
-              style="margin-left: 10px"
-            />
-            <ElSwitch
               v-model="tableConfig.fixedHeight"
               active-text="固定高度 (500px)"
               inactive-text="自适应高度"
@@ -351,17 +315,16 @@
             <ElButton @click="handleScrollToTop">滚动到顶部</ElButton>
             <ElButton @click="handleScrollToPosition">滚动到指定位置</ElButton>
             <ElButton @click="handleToggleSelection">切换全选</ElButton>
-            <ElButton @click="handleRefreshLayout">刷新布局</ElButton>
             <ElButton @click="handleGetTableInfo">获取表格信息</ElButton>
           </div>
         </div>
       </div>
     </ElCard>
 
-    <!-- 刷新策略演示 -->
+    <!-- 缓存刷新策略演示 -->
     <ElCard class="refresh-demo-card" shadow="never">
       <template #header>
-        <h4>🔄 刷新策略演示</h4>
+        <h4>🔄 【缓存】刷新策略演示</h4>
       </template>
       <div class="refresh-buttons">
         <ElButton @click="refreshAll" v-ripple>
@@ -439,27 +402,26 @@
 
   // 表格配置演示
   const tableConfig = ref({
-    showSummary: false,
     height: '100%',
     fixedHeight: false // 新增：是否固定高度的开关
   })
 
   // 计算实际的表格高度
   const computedTableHeight = computed(() => {
-    return tableConfig.value.fixedHeight ? '500px' : '100%'
+    return tableConfig.value.fixedHeight ? '500px' : ''
   })
 
-  // 定义搜索表单的初始状态
-  const initialSearchState = {
-    name: '',
+  // 表单搜索初始值
+  const defaultFilter = ref({
+    name: 'jack',
     phone: '',
-    status: '',
+    status: '1',
     department: '',
-    dateRange: undefined
-  }
+    dateRange: ['2025-01-01', '2025-02-10']
+  })
 
   // 搜索表单状态
-  const searchFormState = ref({ ...initialSearchState })
+  const searchFormState = ref({ ...defaultFilter.value })
 
   // 用户状态配置
   const USER_STATUS_CONFIG = {
@@ -619,11 +581,7 @@
         size: 20,
         // pageNum: 1, // 自定义分页字段映射， 默认为 current
         // pageSize: 20, // 自定义分页字段映射， 默认为 size
-        name: '',
-        phone: '',
-        status: '',
-        department: '',
-        dateRange: undefined
+        ...defaultFilter
       },
       // 自定义分页字段映射，同时需要在 apiParams 中配置字段名
       // paginationKey: {
@@ -632,6 +590,21 @@
       // },
       immediate: true,
       columnsFactory: () => [
+        // {
+        //   type: 'expand',
+        //   label: '展开行',
+        //   width: 80,
+        //   formatter: (row) =>
+        //     h('div', { style: 'padding: 10px 30px' }, [
+        //       h('p', {}, '用户ID: ' + row.id),
+        //       h('p', {}, '用户名: ' + row.userName),
+        //       h('p', {}, '手机号: ' + row.userPhone),
+        //       h('p', {}, '邮箱: ' + row.userEmail),
+        //       h('p', {}, '性别: ' + row.userGender),
+        //       h('p', {}, '状态: ' + row.status),
+        //       h('p', {}, '创建日期: ' + row.createTime)
+        //     ])
+        // },
         { type: 'selection', width: 50 },
         // { type: 'index', width: 60, label: '序号' }, // 本地序号列
         { type: 'globalIndex', width: 60, label: '序号' }, // 全局序号列
@@ -642,6 +615,7 @@
           useSlot: true,
           useHeaderSlot: true,
           sortable: false
+          // checked: false, // 隐藏列
         },
         {
           prop: 'userGender',
@@ -757,34 +731,12 @@
   // 事件处理函数
   const handleSelectionChange = (selection: UserListItem[]) => {
     selectedRows.value = selection
-    logEvent('选择变更', `已选择 ${selection.length} 行数据`)
+    console.log('选择变更:', selection)
   }
 
   const handleRowClick = (row: UserListItem) => {
     console.log('行点击:', row)
     logEvent('行点击', `点击了用户: ${row.userName}`)
-  }
-
-  const handleRowDblclick = (row: UserListItem) => {
-    console.log('行双击:', row)
-    logEvent('行双击', `双击了用户: ${row.userName}`)
-    ElMessage.info(`双击查看 ${row.userName} 的详细信息`)
-  }
-
-  const handleRowContextmenu = (row: UserListItem) => {
-    console.log('行右键菜单:', row)
-    logEvent('行右键', `右键点击用户: ${row.userName}`)
-    ElMessage.info(`右键菜单 - ${row.userName}`)
-  }
-
-  const handleCellClick = (row: UserListItem, column: any) => {
-    console.log('单元格点击:', row, column)
-    logEvent('单元格点击', `点击了 ${row.userName} 的 ${column.label} 列`)
-  }
-
-  const handleCellDblclick = (row: UserListItem, column: any) => {
-    console.log('单元格双击:', row, column)
-    logEvent('单元格双击', `双击了 ${row.userName} 的 ${column.label} 列`)
   }
 
   const handleHeaderClick = (column: any) => {
@@ -797,27 +749,6 @@
     console.log('排序字段:', sortInfo.prop)
     console.log('排序方向:', sortInfo.order)
     logEvent('排序变更', `字段: ${sortInfo.prop}, 方向: ${sortInfo.order}`)
-  }
-
-  // 自定义合计方法
-  const handleSummaryMethod = ({ columns, data }: { columns: any[]; data: any[] }) => {
-    const sums: string[] = []
-    columns.forEach((column, index) => {
-      if (index === 0) {
-        sums[index] = '合计'
-        return
-      }
-      if (column.property === 'score') {
-        const scores = data.map((item) => Number(item.score || 0))
-        const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length
-        sums[index] = `平均: ${avgScore.toFixed(1)}`
-      } else if (column.property === 'userPhone') {
-        sums[index] = `${data.length} 个用户`
-      } else {
-        sums[index] = ''
-      }
-    })
-    return sums
   }
 
   // 事件日志记录
@@ -865,28 +796,21 @@
 
   const handleScrollToTop = () => {
     tableRef.value?.scrollToTop()
-    ElMessage.info('已滚动到顶部')
   }
 
   const handleScrollToPosition = () => {
-    tableRef.value?.scrollToPosition(200)
-    ElMessage.info('已滚动到指定位置')
+    console.log('123')
+    tableRef.value?.elTableRef.setScrollTop(200)
   }
 
   const handleToggleSelection = () => {
     if (selectedRows.value.length === 0) {
-      tableRef.value?.toggleAllSelection()
+      tableRef.value?.elTableRef.toggleAllSelection()
       ElMessage.info('已全选')
     } else {
-      tableRef.value?.clearSelection()
+      tableRef.value?.elTableRef.clearSelection()
       ElMessage.info('已取消全选')
     }
-  }
-
-  // 自定义功能相关方法
-  const handleRefreshLayout = () => {
-    tableRef.value?.doLayout()
-    ElMessage.success('已刷新表格布局')
   }
 
   const handleGetTableInfo = () => {
@@ -905,18 +829,18 @@
 
   const handleSearch = () => {
     console.log('搜索参数:', searchFormState.value)
-    // 将搜索表单的值应用到 searchState
-    Object.assign(searchState, searchFormState.value)
-    // 更新请求参数显示
-    requestParams.value = { ...searchState }
-    addCacheLog(`🔍 执行搜索: ${JSON.stringify(searchFormState.value)}`)
+    const { dateRange, ...searchParams } = searchFormState.value
+    const [startTime, endTime] = Array.isArray(dateRange) ? dateRange : [null, null]
+
+    // 搜索参数赋值
+    Object.assign(searchState, { ...searchParams, startTime, endTime })
     searchData()
   }
 
   const handleReset = () => {
     addCacheLog('🔄 重置搜索')
     // 重置搜索表单状态
-    searchFormState.value = { ...initialSearchState }
+    searchFormState.value = { ...defaultFilter.value }
     resetSearch()
   }
 
@@ -1214,32 +1138,44 @@
         }
       }
 
-      .toolbar-left {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-
-        .table-actions {
-          margin-left: 8px;
-        }
-      }
-
       .user-info {
         display: flex;
         gap: 12px;
         align-items: center;
 
+        .el-avatar {
+          flex-shrink: 0;
+          width: 40px !important;
+          height: 40px !important;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+          }
+        }
+
         .user-details {
+          flex: 1;
+          min-width: 0;
+
           .user-name {
             margin: 0;
+            overflow: hidden;
             font-weight: 500;
             color: var(--el-text-color-primary);
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
 
           .user-email {
             margin: 4px 0 0;
+            overflow: hidden;
             font-size: 12px;
             color: var(--el-text-color-regular);
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
         }
       }
@@ -1249,7 +1185,7 @@
       }
 
       .custom-header {
-        display: flex;
+        display: inline-block;
         gap: 4px;
         align-items: center;
         color: var(--el-color-primary);
@@ -1377,16 +1313,6 @@
 
         .intro-badges {
           width: 100%;
-        }
-      }
-
-      .art-table-card .toolbar-left {
-        flex-direction: column;
-        gap: 8px;
-        align-items: flex-start;
-
-        .table-actions {
-          margin-left: 0;
         }
       }
 
